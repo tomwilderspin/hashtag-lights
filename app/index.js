@@ -34,17 +34,23 @@ const updateLights = () => {
     lights.render(pixelData);
   } else {
     //reset the lights to background
-    resetLights();
+    resetLights(offset);
   }
 };
 
-const resetLights = () => {
-  lights.render(pixelData.map(color => 0xf4d942));
+const resetLights = (start) => {
+  let offset = start;
+  const interval = setInterval(() => {
+    pixelData[offset] = 0xfcb30a;
+    offset--;
+    lights.render(pixelData);
+    if (offset == 0 ) {
+      clearInterval(interval);
+    }
+  }, 100);
 };
 
 lights.init(lightsCount);
-
-resetLights();
 
 //twitter event handlers
 const onData = data => {
