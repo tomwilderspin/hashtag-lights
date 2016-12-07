@@ -45,7 +45,7 @@ const resetLights = (start) => {
     pixelNum--;
     lights.render(pixelData);
     if (pixelNum == 0 ) {
-      lights.render(pixelData.map(colour => 0));
+      lights.reset();
       offset = 0;
       clearInterval(interval);
     }
