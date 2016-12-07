@@ -38,7 +38,7 @@ const updateLights = () => {
 };
 
 const resetLights = () => {
-  lights.render(pixelData.map(color => 0xf4d942);
+  lights.render(pixelData.map(color => 0xf4d942));
 };
 
 lights.init(lightsCount);
