@@ -48,6 +48,7 @@ const resetLights = (start) => {
     lights.render(pixelData);
     if (pixelNum == 0 ) {
       lights.reset();
+      lights.init(lightsCount);
       offset = 0;
       clearInterval(interval);
     }
