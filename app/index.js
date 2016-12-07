@@ -19,7 +19,7 @@ const twitterCreds = {
 const lightsCount = parseInt(process.env.NUMBER_OF_LIGHTS);
 
 //setup lights
-const pixelData = new Uint32Array(lightsCount);
+let pixelData = new Uint32Array(lightsCount);
 
 lights.init(lightsCount);
 
@@ -29,7 +29,7 @@ const updateLights = () => {
 
   if (offset != lightsCount - 1) {
     let pixColour = offset % 2 ?
-          0x027c0a : 0xad0005;
+          0x027c0a : 0xff0000; // green | red
 
     pixelData[offset] = pixColour;
     offset = (offset + 1) % lightsCount;
@@ -47,9 +47,9 @@ const resetLights = (start) => {
     pixelNum--;
     lights.render(pixelData);
     if (pixelNum == 0 ) {
-      lights.reset();
-      lights.init(lightsCount);
       offset = 0;
+      pixelData = pixelData.map(colour => 0);
+      lights.render(pixelData);
       clearInterval(interval);
     }
   }, 100);
