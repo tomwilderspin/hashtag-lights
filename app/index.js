@@ -24,8 +24,8 @@ const pixelData = new Uint32Array(lightsCount);
 let offset = 0;
 
 const updateLights = () => {
-  console.log(offset);
-  if (offset != lightsCount) {
+
+  if (offset != lightsCount - 1) {
     let pixColour = offset % 2 ?
           0x027c0a : 0xad0005;
 
@@ -43,6 +43,8 @@ const resetLights = () => {
 };
 
 lights.init(lightsCount);
+
+resetLights();
 
 //twitter event handlers
 const onData = data => {
