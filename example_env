@@ -1,0 +1,11 @@
+#hashtag
+HASHTAG="#xmas"
+
+#number of lights
+NUMBER_OF_LIGHTS=50
+
+#twitter credentials
+TWIT_CONSUMER_KEY=<key here>
+TWIT_CONSUMER_SEC=<secret here>
+TWIT_ACCESS_KEY=<key here>
+TWIT_ACCESS_SEC=<secret here>
