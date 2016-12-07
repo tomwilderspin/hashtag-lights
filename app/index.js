@@ -2,7 +2,6 @@
 const twitter = require('twitter');
 const lights = require('rpi-ws281x-native');
 const dotenv = require('dotenv');
-const color = require('color');
 
 //add .env file to process env
 dotenv.config();
@@ -17,7 +16,7 @@ const twitterCreds = {
         access_token_secret: process.env.TWIT_ACCESS_SEC
       };
 
-const lightsCount = process.env.NUMBER_OF_LIGHTS;
+const lightsCount = parseInt(process.env.NUMBER_OF_LIGHTS);
 
 //setup lights
 const pixelData = new Uint32Array(lightsCount);
@@ -25,16 +24,27 @@ const pixelData = new Uint32Array(lightsCount);
 let offset = 0;
 
 const updateLights = () => {
-  pixelData[offset] = 0xffffff;
-  offset = (offset + 1) % lightsCount;
-  lights.render(pixelData);
+  if (offset != lightsCount) {
+    let pixColour = offset % 2 ?
+          0x19d63f : 0xd62319;
+
+    pixelData[offset] = pixColour;
+    offset = (offset + 1) % lightsCount;
+    lights.render(pixelData);
+  } else {
+    //reset the lights to background
+    resetLights();
+  }
+};
+
+const resetLights = () => {
+  lights.render(pixelData.map(color => 0xf4d942);
 };
 
 lights.init(lightsCount);
 
 //twitter event handlers
 const onData = data => {
-  console.log(data.text);
   updateLights();
 };
 
