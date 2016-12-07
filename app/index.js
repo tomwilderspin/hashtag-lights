@@ -39,12 +39,14 @@ const updateLights = () => {
 };
 
 const resetLights = (start) => {
-  let offset = start;
+  let pixelNum = start;
   const interval = setInterval(() => {
-    pixelData[offset] = 0xfcb30a;
+    pixelData[pixelNum] = 0x0a12fc;
     offset--;
     lights.render(pixelData);
-    if (offset == 0 ) {
+    if (pixelNum == 0 ) {
+      lights.render(pixelData.map(colour => 0));
+      offset = 0;
       clearInterval(interval);
     }
   }, 100);
