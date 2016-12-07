@@ -1,10 +1,8 @@
-//import { inherits } from 'util';
-//import { eventEmitter } from 'events';
-
-import twitter from 'twitter';
-import lights from 'rpi-ws281x-native';
-import dotenv from 'dotenv';
-import color from 'color';
+//dependencies
+const twitter = require('twitter');
+const lights = require('rpi-ws281x-native');
+const dotenv = require('dotenv');
+const color = require('color');
 
 //add .env file to process env
 dotenv.config();
@@ -22,19 +20,22 @@ const twitterCreds = {
 const lightsCount = process.env.NUMBER_OF_LIGHTS;
 
 //setup lights
-const colours = {
-	white : {h:20, s:80, l:80},
-	blue : {h:185, s:100, l:50},
-	red : {h:350, s:80, l:50},
-	green : {h:160, s:90, l:50},
-	yellow : {h:35, s:100, l:60},
+const pixelData = new Uint32Array(lightsCount);
+
+let offset = 0;
+
+const updateLights = () => {
+  pixelData[offset] = 0xffffff;
+  offset = (offset + 1) % lightsCount;
+  lights.render(pixelData);
 };
 
-
+lights.init(lightsCount);
 
 //twitter event handlers
 const onData = data => {
   console.log(data.text);
+  updateLights();
 };
 
 const onError = error => {
@@ -55,3 +56,10 @@ tweetClient.stream(
     stream.on('data', onData);
   }
 );
+
+//process handlers
+//trap the SIGINT and reset before exit
+process.on('SIGINT', function () {
+  lights.reset();
+  process.nextTick(function () { process.exit(0); });
+});
