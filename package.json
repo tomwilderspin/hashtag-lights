@@ -10,6 +10,7 @@
   "author": "tomwilderspin@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "color": "^1.0.2",
     "dotenv": "^2.0.0",
     "rpi-ws281x-native": "^0.8.1",
     "twitter": "^1.5.0"
