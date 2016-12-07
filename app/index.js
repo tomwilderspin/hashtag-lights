@@ -24,9 +24,10 @@ const pixelData = new Uint32Array(lightsCount);
 let offset = 0;
 
 const updateLights = () => {
+  console.log(offset);
   if (offset != lightsCount) {
     let pixColour = offset % 2 ?
-          0x19d63f : 0xd62319;
+          0x027c0a : 0xad0005;
 
     pixelData[offset] = pixColour;
     offset = (offset + 1) % lightsCount;
