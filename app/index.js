@@ -2,7 +2,7 @@
 //import { eventEmitter } from 'events';
 
 import twitter from 'twitter';
-//import lights from 'rpi-ws281x-native';
+import lights from 'rpi-ws281x-native';
 import dotenv from 'dotenv';
 import color from 'color';
 
@@ -29,6 +29,8 @@ const colours = {
 	green : {h:160, s:90, l:50},
 	yellow : {h:35, s:100, l:60},
 };
+
+
 
 //twitter event handlers
 const onData = data => {
