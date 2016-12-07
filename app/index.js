@@ -21,6 +21,8 @@ const lightsCount = parseInt(process.env.NUMBER_OF_LIGHTS);
 //setup lights
 const pixelData = new Uint32Array(lightsCount);
 
+lights.init(lightsCount);
+
 let offset = 0;
 
 const updateLights = () => {
@@ -51,8 +53,6 @@ const resetLights = (start) => {
     }
   }, 100);
 };
-
-lights.init(lightsCount);
 
 //twitter event handlers
 const onData = data => {
