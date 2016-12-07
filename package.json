@@ -4,11 +4,12 @@
   "description": "control your xmas lights via twitter velocity",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack -p"
   },
   "author": "tomwilderspin@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^2.0.0",
     "rpi-ws281x-native": "^0.8.1",
     "twitter": "^1.5.0"
   },
