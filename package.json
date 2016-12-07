@@ -1,0 +1,22 @@
+{
+  "name": "hashtag-lights",
+  "version": "1.0.0",
+  "description": "control your xmas lights via twitter velocity",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tomwilderspin@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "rpi-ws281x-native": "^0.8.1",
+    "twitter": "^1.5.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.8",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-2": "^6.18.0",
+    "webpack": "^1.14.0"
+  }
+}
