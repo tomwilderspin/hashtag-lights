@@ -42,7 +42,7 @@ const resetLights = (start) => {
   let pixelNum = start;
   const interval = setInterval(() => {
     pixelData[pixelNum] = 0x0a12fc;
-    offset--;
+    pixelNum--;
     lights.render(pixelData);
     if (pixelNum == 0 ) {
       lights.render(pixelData.map(colour => 0));
