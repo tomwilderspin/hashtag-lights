@@ -30,7 +30,7 @@ const updateLights = (index) => {
 
   lightActions.updateLight(
     index,
-    index % 2 ? 0x027c0a : 0xff0000; // green | red
+    index % 2 ? 0x027c0a : 0xff0000 // green | red
   );
 
   return index;
@@ -68,7 +68,7 @@ const onData = data => {
   } else {
     //run reset process
       if (!resetFlag) {
-        
+
       resetFlag = true;
 
       resetLights(tweetCount)
