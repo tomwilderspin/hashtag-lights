@@ -3,6 +3,8 @@ const twitter = require('twitter');
 const lights = require('rpi-ws281x-native');
 const dotenv = require('dotenv');
 
+const lightController = require('./lightController')(lights);
+
 //add .env file to process env
 dotenv.config();
 
@@ -19,45 +21,63 @@ const twitterCreds = {
 const lightsCount = parseInt(process.env.NUMBER_OF_LIGHTS);
 
 //setup lights
-let pixelData = new Uint32Array(lightsCount);
 
-lights.init(lightsCount);
+//returns actions for working with the neoPixel lib
+const lightActions = lightController(lightsCount);
 
-let offset = 0;
+//update light at index with color
+const updateLights = (index) => {
 
-const updateLights = () => {
+  lightActions.updateLight(
+    index,
+    index % 2 ? 0x027c0a : 0xff0000 // green | red
+  );
 
-  if (offset != lightsCount - 1) {
-    let pixColour = offset % 2 ?
-          0x027c0a : 0xff0000; // green | red
-
-    pixelData[offset] = pixColour;
-    offset = (offset + 1) % lightsCount;
-    lights.render(pixelData);
-  } else {
-    //reset the lights to background
-    resetLights(offset);
-  }
+  return index;
 };
 
-const resetLights = (start) => {
-  let pixelNum = start;
-  const interval = setInterval(() => {
-    pixelData[pixelNum] = 0x0a12fc;
-    pixelNum--;
-    lights.render(pixelData);
-    if (pixelNum == 0 ) {
-      offset = 0;
-      pixelData = pixelData.map(colour => 0);
-      lights.render(pixelData);
-      clearInterval(interval);
-    }
-  }, 100);
+//play reset animation & reset lights when done
+const resetLights = (index) => {
+
+    return new Promise((resolve) => {
+
+      let pointer = index;
+      const interval = setInterval(() => {
+
+        lightActions.updateLight(pointer, 0x0a12fc);
+        pointer--;
+
+        if (pointer < 1) {
+          lightActions.resetLights();
+          clearInterval(interval);
+          resolve(0);
+        }
+      }, 100);
+    });
 };
 
 //twitter event handlers
+let tweetCount = 0;
+let resetFlag = false;
 const onData = data => {
-  updateLights();
+
+  if (tweetCount !== (lightsCount - 1)) {
+    //update lights with new tweet
+    tweetCount = (updateLights(tweetCount) + 1) % lightsCount;
+
+  } else {
+    //run reset process
+      if (!resetFlag) {
+
+      resetFlag = true;
+
+      resetLights(tweetCount)
+      .then((index) => {
+        resetFlag = false;
+        tweetCount = index;
+      });
+    }
+  }
 };
 
 const onError = error => {
@@ -82,6 +102,6 @@ tweetClient.stream(
 //process handlers
 //trap the SIGINT and reset before exit
 process.on('SIGINT', function () {
-  lights.reset();
+  lightActions.resetDefaults();
   process.nextTick(function () { process.exit(0); });
 });
