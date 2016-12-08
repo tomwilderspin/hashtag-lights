@@ -28,7 +28,12 @@ const resetDefaults = (neoPixels) => {
 const reset = (pixelData, neoPixels) => {
   return () => {
     // sets all light values to zero and renders.
-    return neoPixels.render(pixelData.map(() => 0));
+    const update = updateToColour(pixelData, neoPixels);
+
+    return pixelData.map((value, index) => {
+      update(index, 0);
+      return 0;
+    });
   }
 }
 
