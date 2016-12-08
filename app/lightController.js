@@ -11,7 +11,7 @@ module.exports = (neoPixels) => {
     return {
       updateLight: update(pixelData, neoPixels),
       resetLights: reset(pixelData, neoPixels),
-      resetDefaults: resetDefaults(neoPixels);
+      resetDefaults: resetDefaults(neoPixels)
     };
   };
 };
