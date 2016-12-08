@@ -9,7 +9,7 @@ module.exports = (neoPixels) => {
     const pixelData = new Uint32Array(numberOfLights);
 
     return {
-      updateLight: update(pixelData, neoPixels),
+      updateLight: updateToColour(pixelData, neoPixels),
       resetLights: reset(pixelData, neoPixels),
       resetDefaults: resetDefaults(neoPixels)
     };
