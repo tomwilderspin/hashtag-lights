@@ -38,7 +38,6 @@ const updateLights = (index) => {
 
 //play reset animation & reset lights when done
 const resetLights = (index) => {
-
     return new Promise((resolve) => {
 
       let pointer = index;
@@ -72,10 +71,10 @@ const onData = data => {
       resetFlag = true;
 
       resetLights(tweetCount)
-      .then((index) => {
-        resetFlag = false;
-        tweetCount = index;
-      });
+        .then((index) => {
+          resetFlag = false;
+          tweetCount = index;
+        });
     }
   }
 };
@@ -89,15 +88,43 @@ const onEnd = response => {
 };
 
 //start listening to twitter events
-const tweetClient = new twitter(twitterCreds);
 
-tweetClient.stream(
-  'statuses/filter',
+const connectToTwitter = (creds) => {
+  const twitterClient = new twitter(creds);
+  return (props, cb) => {
+    return () => {
+      //kill any open sockets
+      twitterClient.stream.destory();
+
+      //create a new connection
+      twitterClient.stream('statuses/filter', props, cb);
+      return 'connected';
+    }
+  };
+};
+
+//connect
+const twitterConnect = connectToTwitter(twitterCreds)(
   {track: hashTag},
-  function(stream){
+  (stream) => {
+    let timerID = 0;
     stream.on('data', onData);
+    stream.on('data', () => { timerID = refreshAntiStall(timerID) });
   }
 );
+
+//twitter stream anti-stall
+const refreshAntiStall = (timerID) => {
+  if (timerID) {
+    clearTimeout(timerId);
+  }
+  return setTimeout(() => {
+    twitterConnect();
+  }, 90000);
+};
+
+//init twitter connection
+twitterConnect();
 
 //process handlers
 //trap the SIGINT and reset before exit
