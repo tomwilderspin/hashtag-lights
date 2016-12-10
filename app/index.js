@@ -78,7 +78,7 @@ const onData = data => {
 };
 
 //init light animation
-const getSpeed = speedMachine(100);
+const getSpeed = speedMachine(1000);
 
 const initLights = (speedCalc) => {
   return (lightPointer) => {
