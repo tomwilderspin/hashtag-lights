@@ -25,16 +25,33 @@ const lightsCount = parseInt(process.env.NUMBER_OF_LIGHTS);
 //returns actions for working with the neoPixel lib
 const lightActions = lightController(lightsCount);
 
-//update light at index with color
-const updateLights = (index) => {
+//light colours: yellow | red | green | blue
+const colours = new Uint32Array([0xf2c637, 0xe20c09, 0x1dd61d, 0x4286f4]);
 
-  lightActions.updateLight(
-    index,
-    index % 2 ? 0x027c0a : 0xff0000 // green | red
-  );
-
-  return index;
+//flux the speed of lights tick
+const speedMachine = (baseTick) => {
+  let base = baseTick;
+  return (divider) => {
+    return Math.ceil(baseTick / divider % baseTick);
+  };
 };
+
+
+//update lights with colours and speed
+const updateLights = (speed, colours) => {
+  return new Promise((resolve) => {
+    let pointer = 0;
+
+    const interval = setInterval(() => {
+      lightActions.updateLight(pointer, colours[(pointer % colours.length)]);
+      pointer = (pointer +1) % lightsCount;
+      if (pointer == lightsCount - 1) {
+        clearInterval(interval);
+        resolve(pointer);
+      }
+    }, speed);
+  });
+}
 
 //play reset animation & reset lights when done
 const resetLights = (index) => {
@@ -47,7 +64,6 @@ const resetLights = (index) => {
         pointer--;
 
         if (pointer < 1) {
-          lightActions.resetLights();
           clearInterval(interval);
           resolve(0);
         }
@@ -56,36 +72,26 @@ const resetLights = (index) => {
 };
 
 //twitter event handlers
-let tweetCount = 0;
-let resetFlag = false;
+let tweetCount = 1;
 const onData = data => {
-
-  if (tweetCount !== (lightsCount - 1)) {
-    //update lights with new tweet
-    tweetCount = (updateLights(tweetCount) + 1) % lightsCount;
-
-  } else {
-    //run reset process
-      if (!resetFlag) {
-
-      resetFlag = true;
-
-      resetLights(tweetCount)
-        .then((index) => {
-          resetFlag = false;
-          tweetCount = index;
-        });
-    }
-  }
+  tweetCount++;
 };
 
-const onError = error => {
-  console.error('stream error', error);
+//init light animation
+const getSpeed = speedMachine(100);
+
+const initLights = (speedCalc) => {
+  return (lightPointer) => {
+    const count = tweetCount;
+    console.log(count);
+    tweetCount = 1;
+    return lightPointer > 0 ?
+      resetLights(lightPointer).then(initLights(speedCalc)) :
+      updateLights(speedCalc(count), colours).then(initLights(speedCalc));
+  };
 };
 
-const onEnd = response => {
-  console.log('twitter end:  '+response);
-};
+initLights(getSpeed)(0);
 
 //start listening to twitter events
 
@@ -93,9 +99,6 @@ const connectToTwitter = (creds) => {
   const twitterClient = new twitter(creds);
   return (props, cb) => {
     return () => {
-      //kill any open sockets
-      twitterClient.stream.destory();
-
       //create a new connection
       twitterClient.stream('statuses/filter', props, cb);
       return 'connected';
@@ -116,7 +119,7 @@ const twitterConnect = connectToTwitter(twitterCreds)(
 //twitter stream anti-stall
 const refreshAntiStall = (timerID) => {
   if (timerID) {
-    clearTimeout(timerId);
+    clearTimeout(timerID);
   }
   return setTimeout(() => {
     twitterConnect();
